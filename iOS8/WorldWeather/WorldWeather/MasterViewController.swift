@@ -27,7 +27,13 @@ class MasterViewController: UITableViewController {
 //            let controllers = split.viewControllers
 //            self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
 //        }
-        
+        if let split = self.splitViewController {
+            let controllers :[UIViewController] = split.viewControllers
+            detailViewController = (controllers[controllers.count-1]  as! UINavigationController).topViewController as? DetailViewController
+            if let detailViewController = detailViewController {
+                detailViewController.cityWeather = weatherData.cities[0]
+            }
+        }
         self.title = "Cities"
     }
 
@@ -51,12 +57,18 @@ class MasterViewController: UITableViewController {
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showDetail" {
-            if let indexPath = self.tableView.indexPathForSelectedRow {
+//            if let indexPath = self.tableView.indexPathForSelectedRow {
 //                let object = objects[indexPath.row] as! NSDate
 //                let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
 //                controller.detailItem = object
 //                controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
 //                controller.navigationItem.leftItemsSupplementBackButton = true
+//            }
+            
+            if let indexPath = self.tableView.indexPathForSelectedRow {
+                let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
+                controller.cityWeather = weatherData.cities[indexPath.row]
+                controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
             }
         }
     }
@@ -83,20 +95,6 @@ class MasterViewController: UITableViewController {
         cell.textLabel?.text = city.name
 
         return cell
-    }
-
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
-            objects.removeAtIndex(indexPath.row)
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        } else if editingStyle == .Insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-        }
     }
 
 
