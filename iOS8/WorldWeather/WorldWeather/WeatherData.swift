@@ -7,7 +7,66 @@
 //
 
 import Foundation
+import UIKit
 
+
+enum WeatherStatusType : String {
+    
+    case Sun = "sun"
+    case Cloud = "cloud"
+    case Lightning = "lightning"
+    var image :UIImage {
+        return UIImage(named: self.rawValue)!
+    }
+    
+}
+
+struct WeatherStatus {
+    
+    private(set) var temperature : Int
+    private(set) var weatherType : WeatherStatusType
+    
+    init (temperature : Int , type : WeatherStatusType){
+        self.temperature = temperature
+        self.weatherType = type
+    }
+}
+
+
+let dayNameDateFormatter = NSDateFormatter()
+
+class DailyWeather {
+    
+    private(set) var date : NSDate
+    private(set) var status : WeatherStatus
+    
+    
+    var dayName : String {
+        dayNameDateFormatter.dateFormat = "E"
+        return dayNameDateFormatter.stringFromDate(date)
+    }
+    
+    init(date: NSDate , status : WeatherStatus){
+        self.date = date
+        self.status = status
+    }
+    
+}
+
+class CityWeather {
+    
+    var name : String = ""
+    var weather :[DailyWeather]
+    
+    var cityImage : UIImage {
+        return UIImage(named:name)!
+    }
+    
+    init (name : String , weather : [DailyWeather]){
+        self.name = name
+        self.weather = weather
+    }
+}
 
 
 class WeatherData {
@@ -25,7 +84,9 @@ class WeatherData {
 
     private  func  loadWeatherData(plistNamed : String) -> [CityWeather]{
 
-        let plistRoot : NSDictionary? = NSDictionary(contentsOfFile: NSBundle.mainBundle().pathForResource(plistNamed , ofType: "plist")!)
+        let path : NSString? =  NSBundle.mainBundle().pathForResource(plistNamed , ofType: "plist")
+        
+        let plistRoot : NSDictionary? = NSDictionary(contentsOfFile:path as! String)
         var  cityWeather = [CityWeather]()
         for (name, dailyWeather) in plistRoot as! [String : [NSDictionary]] {
             cityWeather.append(CityWeather(array: dailyWeather, name: name))
